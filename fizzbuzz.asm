@@ -9,7 +9,7 @@
 #   t2 -- stores 3 for division
 #   t3 -- stores 5 for division
 #   t4 -- stores $HI
-#   t4 -- printed fizz or buzz flag
+#   t5 -- printed fizz or buzz flag
 
 
         .text
@@ -24,16 +24,37 @@ loop:
         mfhi    $t4                     #move remainder into t4
         beq     $t4, $zero, print_fizz  #
         
-        move      $a0, $t0              #set i to be printed
-        li      $v0, 1                  #print int
-        syscall
-        addi    $t0, $t0, 1
+        b       check_buzz
         
 print_fizz:
         li      $t5, 1                  #set print flag to 1(printed)
         la      $a0, fizz               #
         li      $v0, 4
         syscall
+
+check_buzz:
+        div     $t0, $t3
+        mfhi    $t4
+        beq     $t4, $zero, print_buzz
+        b       check_i
+
+print_buzz:
+        li      $t5, 1
+        la      $a0, buzz
+        li      $v0, 4
+        syscall
+
+check_i:
+        bgtz    $t5, prep_loop
+        move      $a0, $t0
+        li      $v0, 1
+        syscall
+prep_loop:
+        addi    $t0, 1
+        li      $a0, 0xA
+        li      $v0, 0xB
+        syscall
+        bne     $t0, $t1, loop
         
         
 exit:
@@ -41,6 +62,5 @@ exit:
         syscall
         
         .data
-fizz:       .ascii "fizz"
-buzz:       .ascii "buzz"
-fizzbuzz:   .asciiz "fizzbuzz" #NOT NECESSARY
+fizz:       .asciiz "fizz"
+buzz:       .asciiz "buzz"
