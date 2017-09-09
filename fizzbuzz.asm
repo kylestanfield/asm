@@ -28,33 +28,34 @@ loop:
         
 print_fizz:
         li      $t5, 1                  #set print flag to 1(printed)
-        la      $a0, fizz               #
+        la      $a0, fizz               #then print "fizz"
         li      $v0, 4
         syscall
 
 check_buzz:
-        div     $t0, $t3
-        mfhi    $t4
-        beq     $t4, $zero, print_buzz
-        b       check_i
+        div     $t0, $t3                #divide i by 5
+        mfhi    $t4                     #move the remainder into t4
+        beq     $t4, $zero, print_buzz  #check if remainder is 0, if so branch to print buzz
+        b       check_i                 #otherwise jump past it
 
 print_buzz:
         li      $t5, 1
-        la      $a0, buzz
+        la      $a0, buzz               #print buzz
         li      $v0, 4
         syscall
 
 check_i:
-        bgtz    $t5, prep_loop
-        move      $a0, $t0
+        bgtz    $t5, prep_loop          #if fizz or buzz has been printed do not print i
+        move    $a0, $t0                #otherwise print i
         li      $v0, 1
         syscall
+        
 prep_loop:
-        addi    $t0, 1
+        addi    $t0, 1                  #add one to i, print a newline
         li      $a0, 0xA
         li      $v0, 0xB
         syscall
-        bne     $t0, $t1, loop
+        bne     $t0, $t1, loop          #if i is equal to 100, stop loop, otherwise loop
         
         
 exit:
